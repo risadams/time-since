@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script type="module" src="dist/time-since.js"></script>
+  <script type="module">
+    import {timeSince} from '/dist/time-since.js';
+
+    let then = new Date(2020, 1, 0);
+    let elapsed = timeSince(then);
+
+    console.log(then, elapsed);
+
+    console.table(elapsed);
+  </script>
+</head>
+
+<body>
+
+</body>
+
+</html>

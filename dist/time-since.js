@@ -1,6 +1,10 @@
-export default function timeSince(date) {
+import moment from "./moment.js";
+
+export function timeSince(date)  {
   let now = new Date();
-  let diff = now.getTime() - date.getTime();
+  let diff = (Number(now) - Number(date));
+
+  console.log(now,date,diff);
 
   const years = Math.floor(diff / 31536000);
   const months = Math.floor((diff % 31536000) / 2628000);
@@ -12,11 +16,18 @@ export default function timeSince(date) {
   return {
     date: date,
     asOf: now,
-    years: years,
+    years: getYears(date),
     months: months,
     days: days,
     hours: hours,
     minutes: minutes,
-    seconds: seconds,
+    seconds: seconds
   };
+}
+
+const getYears = (from = 2017) => {
+  const diff = moment(new Date()).diff(new Date(`01/01/${from}`), 'years') ;
+  return [...Array(diff >= 0 ? diff + 1 : 0).keys()].map((num) => {
+    return from + num;
+  });
 }
