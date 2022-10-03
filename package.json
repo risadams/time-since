@@ -25,5 +25,8 @@
   "files": [
     "dist/**/*.*"
   ],
-  "homepage": "https://github.com/risadams/time-since#readme"
+  "homepage": "https://github.com/risadams/time-since#readme",
+  "dependencies": {
+    "moment": "^2.29.4"
+  }
 }
