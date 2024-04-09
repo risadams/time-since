@@ -5722,9 +5722,10 @@ function timeSince(date) {
   var now = moment();
   var startDate = moment(date);
 
-  // Using moment.js to calculate years, months, days, etc., directly
-  // Adjust startDate after calculating each component
-
+  // Verify the date parsing was successful
+  if (!startDate.isValid()) {
+    throw new Error('Invalid date input');
+  }
   var years = now.diff(startDate, 'years');
   startDate.add(years, 'years');
   var months = now.diff(startDate, 'months');
