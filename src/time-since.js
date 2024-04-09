@@ -1,4 +1,4 @@
-import moment from "./moment.js";
+import moment from "moment";
 
 /**
  * Calculates the time elapsed since a given date and returns it in various time units.
