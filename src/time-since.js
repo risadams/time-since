@@ -18,28 +18,25 @@ import moment from "moment";
  * console.log(elapsedTime.years); // Output: 4 (assuming the current year is 2024)
  */
 export function timeSince(date) {
-  let now = moment();
-  let startDate = moment(date);
+  const startDate = typeof date === 'string' ? moment(new Date(date)) : moment(date);
 
-  // Using moment.js to calculate years, months, days, etc., directly
-  // Adjust startDate after calculating each component
+  // Ensure the start date is valid
+  if (!startDate.isValid()) {
+    throw new Error('Invalid date input');
+  }
 
-  const years = now.diff(startDate, 'years');
-  startDate.add(years, 'years');
+  // Get the current date and time as a moment object
+  const now = moment();
 
-  const months = now.diff(startDate, 'months');
-  startDate.add(months, 'months');
+  const duration = moment.duration(now.diff(startDate));
 
-  const days = now.diff(startDate, 'days');
-  startDate.add(days, 'days');
-
-  const hours = now.diff(startDate, 'hours');
-  startDate.add(hours, 'hours');
-
-  const minutes = now.diff(startDate, 'minutes');
-  startDate.add(minutes, 'minutes');
-
-  const seconds = now.diff(startDate, 'seconds');
+  const years = duration.get('years');
+  const months = duration.get('months');
+  const days = duration.get('days');
+  const hours = duration.get('hours');
+  const minutes = duration.get('minutes');
+  const seconds = duration.get('seconds');
+  const milliseconds = duration.get('milliseconds');
 
   return {
     date: date,
@@ -49,6 +46,7 @@ export function timeSince(date) {
     days: days,
     hours: hours,
     minutes: minutes,
-    seconds: seconds
+    seconds: seconds,
+    milliseconds: milliseconds
   };
 }
