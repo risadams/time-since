@@ -5719,24 +5719,23 @@ var moment = /*@__PURE__*/getDefaultExportFromCjs(momentExports);
  * console.log(elapsedTime.years); // Output: 4 (assuming the current year is 2024)
  */
 function timeSince(date) {
-  var now = moment();
-  var startDate = moment(date);
+  var startDate = typeof date === 'string' ? moment(new Date(date)) : moment(date);
 
-  // Verify the date parsing was successful
+  // Ensure the start date is valid
   if (!startDate.isValid()) {
     throw new Error('Invalid date input');
   }
-  var years = now.diff(startDate, 'years');
-  startDate.add(years, 'years');
-  var months = now.diff(startDate, 'months');
-  startDate.add(months, 'months');
-  var days = now.diff(startDate, 'days');
-  startDate.add(days, 'days');
-  var hours = now.diff(startDate, 'hours');
-  startDate.add(hours, 'hours');
-  var minutes = now.diff(startDate, 'minutes');
-  startDate.add(minutes, 'minutes');
-  var seconds = now.diff(startDate, 'seconds');
+
+  // Get the current date and time as a moment object
+  var now = moment();
+  var duration = moment.duration(now.diff(startDate));
+  var years = duration.get('years');
+  var months = duration.get('months');
+  var days = duration.get('days');
+  var hours = duration.get('hours');
+  var minutes = duration.get('minutes');
+  var seconds = duration.get('seconds');
+  var milliseconds = duration.get('milliseconds');
   return {
     date: date,
     asOf: now.toDate(),
@@ -5745,7 +5744,8 @@ function timeSince(date) {
     days: days,
     hours: hours,
     minutes: minutes,
-    seconds: seconds
+    seconds: seconds,
+    milliseconds: milliseconds
   };
 }
 

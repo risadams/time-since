@@ -1,6 +1,6 @@
 {
   "name": "@risadams/time-since",
-  "version": "0.0.1-alpha",
+  "version": "1.0.0",
   "description": "A JavaScript function to calculate the elapsed time between a specified value and now.",
   "main": "dist/time-since.cjs.js",
   "module": "dist/time-since.esm.js",
