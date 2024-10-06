@@ -29,7 +29,8 @@
     "dist/**/*.*"
   ],
   "homepage": "https://github.com/risadams/time-since#readme",
-  "dependencies": {    
+  "dependencies": {
+    "@risadams/time-since": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.7",

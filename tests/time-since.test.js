@@ -1,30 +1,28 @@
 import { timeSince } from '../src/time-since.js';
 
-// Helper function to mock the current date
 const mockCurrentDate = (dateString) => {
   const realDate = Date;
   const mockDate = new Date(dateString);
   global.Date = class extends Date {
     constructor(date) {
-      super();
-      return date ? new realDate(date) : mockDate;
+      if (date) {
+        return new realDate(date);
+      }
+      return mockDate;
     }
   };
 };
 
-// Cleanup function to reset Date to its original state
 const resetMockDate = () => {
   global.Date = Date;
 };
 
 describe('timeSince function', () => {
   beforeEach(() => {
-    // Mock the current date to a fixed point in time for consistent tests
     mockCurrentDate("2024-04-01T00:00:00Z");
   });
 
   afterEach(() => {
-    // Reset the Date object after each test
     resetMockDate();
   });
 
@@ -32,14 +30,12 @@ describe('timeSince function', () => {
     const result = timeSince('2019-12-31');
     expect(result.years).toBe(4);
     expect(result.months).toBe(3);
-    // Add more assertions as needed
   });
 
   test('handles Date objects as input', () => {
     const result = timeSince(new Date('2019-12-31'));
     expect(result.years).toBe(4);
     expect(result.months).toBe(3);
-    // Add more assertions as needed
   });
 
   test('returns all expected time units', () => {
@@ -50,10 +46,8 @@ describe('timeSince function', () => {
     expect(result).toHaveProperty('hours');
     expect(result).toHaveProperty('minutes');
     expect(result).toHaveProperty('seconds');
-    // Ensure each unit is a number
     expect(typeof result.years).toBe('number');
     expect(typeof result.months).toBe('number');
-    // Add more assertions as needed
   });
 
   test('returns milliseconds when format is milliseconds', () => {
@@ -96,8 +90,37 @@ describe('timeSince function', () => {
     expect(result).toBe('last year');
   });
 
-  test('returns relative time in specified locale', () => {
+  test('returns relative time in specified locale (French)', () => {
     const result = timeSince('2020-01-01T00:00:00Z', { format: 'relative', locale: 'fr' });
     expect(result).toBe('il y a 4 ans');
+  });
+
+  test('returns relative time in specified locale (Spanish)', () => {
+    const result = timeSince('2020-01-01T00:00:00Z', { format: 'relative', locale: 'es' });
+    expect(result).toBe('hace 4 años');
+  });
+
+  test('returns relative time in specified locale (Korean)', () => {
+    const result = timeSince('2020-01-01T00:00:00Z', { format: 'relative', locale: 'ko' });
+    expect(result).toBe('4년 전');
+  });
+
+  test('returns relative time in specified locale (Chinese)', () => {
+    const result = timeSince('2020-01-01T00:00:00Z', { format: 'relative', locale: 'zh' });
+    expect(result).toBe('4年前');
+  });
+
+  test('throws an error for future dates when allowFuture is false', () => {
+    expect(() => {
+      timeSince('2025-01-01T00:00:00Z', { format: 'relative' });
+    }).toThrow('Future dates are not allowed unless allowFuture is set to true.');
+  });
+
+  test('handles relative time for a past date across various locales', () => {
+    const locales = ['fr', 'es', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh'];
+    locales.forEach(locale => {
+      const result = timeSince('2020-01-01T00:00:00Z', { format: 'relative', locale });
+      console.log(`Locale ${locale}:`, result);
+    });
   });
 });
