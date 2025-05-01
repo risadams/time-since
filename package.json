@@ -1,7 +1,7 @@
 {
   "name": "@risadams/time-since",
-  "version": "2.0.0",
-  "description": "A zero-dependency TypeScript/JavaScript function to calculate the elapsed time between a specified value and now.",
+  "version": "2.1.0",
+  "description": "A robust, type-safe utility for calculating and formatting time differences. Supports multiple formats (relative, absolute, or individual time units) with internationalization support and accurate handling of future dates, leap years, and timezone differences.",
   "main": "dist/time-since.cjs.js",
   "module": "dist/time-since.esm.js",
   "types": "dist/time-since.d.ts",
@@ -18,12 +18,20 @@
     "url": "git+https://github.com/risadams/time-since.git"
   },
   "keywords": [
-    "javascript",
     "typescript",
-    "time",
-    "utility",
-    "elapsed",
-    "date"
+    "javascript",
+    "date-time",
+    "relative-time",
+    "time-difference",
+    "elapsed-time",
+    "time-calculator",
+    "human-readable",
+    "i18n",
+    "internationalization",
+    "zero-dependency",
+    "date-formatting",
+    "time-ago",
+    "date-utility"
   ],
   "author": "Ris Adams <ris@risadams.com>",
   "license": "MIT",
