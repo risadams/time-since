@@ -1,9 +1,10 @@
 import babel from '@rollup/plugin-babel';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs'; // Import the plugin
+import commonjs from '@rollup/plugin-commonjs';
+import typescript from '@rollup/plugin-typescript'; // Import TypeScript plugin
 
 export default {
-  input: 'src/time-since.js',
+  input: 'src/time-since.ts', // Changed from .js to .ts
   output: [
     {
       file: 'dist/time-since.cjs.js',
@@ -16,9 +17,10 @@ export default {
   ],
   plugins: [
     nodeResolve(),
-    commonjs(), // Add the plugin to the plugins array
+    commonjs(),
+    typescript(), // Add TypeScript plugin
     babel({
-      exclude: 'node_modules/**', // Only transpile our source code
+      exclude: 'node_modules/**',
       babelHelpers: 'bundled'
     }),
   ],

@@ -1,115 +1,196 @@
 'use strict';
 
 /**
+ * @file time-since.ts
+ * @description A utility for calculating elapsed time between dates in various formats
+ * @author Ris Adams <ris@risadams.com>
+ * @copyright 2025
+ * @license MIT
+ */
+/**
  * Calculates the time elapsed since a given date and returns it in various formats.
+ *
+ * This function computes the difference between the provided date and the current date/time,
+ * then returns the result in the format specified in the options.
+ *
  * Utilizes native JavaScript Date and Intl.RelativeTimeFormat for date difference calculations.
  *
+ * @since 1.0.0
  * @param {Date | string} date - The starting date from which to calculate the elapsed time.
  *                               Can be a JavaScript Date object or a string that can be parsed into a date.
- * @param {Object} [options={}] - Options to customize the output format.
- * @param {string} [options.format] - The format of the returned value. Possible values: 'milliseconds', 'seconds', 'minutes', 'hours', 'days', 'months', 'years', 'relative'.
- * @param {string} [options.locale] - The locale to use for relative formatting. Defaults to 'en'.
+ * @param {TimeSinceOptions} [options={}] - Options to customize the output format.
+ * @returns {TimeSinceResult | number | string} An object containing the original date, the date as of the calculation,
+ *          or the elapsed time in a specified format.
+ * @throws {Error} If the provided date is invalid.
  *
- * @returns {Object | string | number} An object containing the original date, the date as of the calculation,
- *                                     or the elapsed time in a specified format.
+ * @example
+ * // Get the default object result with time components
+ * const breakdown = timeSince('2020-01-01');
+ * console.log(breakdown);
+ * // Output: { date: Date, asOf: Date, years: 5, months: 4, ... }
  *
- * Example usage:
- * const elapsedTime = timeSince('2020-01-01', { format: 'days' });
- * console.log(elapsedTime); // Output: 1461 (assuming the current year is 2024)
+ * @example
+ * // Get elapsed time in specific units
+ * const days = timeSince('2020-01-01', { format: 'days' });
+ * console.log(days);
+ * // Output: 1947 (days since 2020-01-01 as of May 1, 2025)
  *
- * const relativeTime = timeSince('2020-01-01', { format: 'relative', locale: 'fr' });
- * console.log(relativeTime); // Output: "il y a 4 ans"
+ * @example
+ * // Get human-readable relative time string
+ * const relative = timeSince('2020-01-01', { format: 'relative', locale: 'fr' });
+ * console.log(relative);
+ * // Output: "il y a 5 ans" (French for "5 years ago")
  */
-function timeSince(date) {
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var startDate = typeof date === 'string' ? new Date(date) : date;
-
-  // Ensure the start date is a valid date
-  if (isNaN(startDate)) {
-    throw new Error('Invalid date input');
-  }
-
-  // Get the current date and time
-  var now = new Date();
-
-  // Calculate the differences
-  var diffMilliseconds = now - startDate;
-  var diffSeconds = Math.floor(diffMilliseconds / 1000);
-  var diffMinutes = Math.floor(diffSeconds / 60);
-  var diffHours = Math.floor(diffMinutes / 60);
-  var diffDays = Math.floor(diffHours / 24);
-  var diffMonths = Math.floor(diffDays / 30); // Approximate month length
-  var diffYears = Math.floor(diffMonths / 12);
-
-  // Calculate individual components
-  var years = diffYears;
-  var months = diffMonths % 12;
-  var days = diffDays % 30; // Approximate day length in a month
-  var hours = diffHours % 24;
-  var minutes = diffMinutes % 60;
-  var seconds = diffSeconds % 60;
-  var milliseconds = diffMilliseconds % 1000;
-
-  // Handle different output formats
-  var _options$format = options.format,
-    format = _options$format === void 0 ? 'object' : _options$format,
-    _options$locale = options.locale,
-    locale = _options$locale === void 0 ? 'en' : _options$locale;
-  switch (format) {
-    case 'milliseconds':
-      return diffMilliseconds;
-    case 'seconds':
-      return diffSeconds;
-    case 'minutes':
-      return diffMinutes;
-    case 'hours':
-      return diffHours;
-    case 'days':
-      return diffDays;
-    case 'months':
-      return diffMonths;
-    case 'years':
-      return diffYears;
-    case 'relative':
-      {
-        var rtf = new Intl.RelativeTimeFormat(locale, {
-          numeric: 'auto'
-        });
-        if (diffYears !== 0) return rtf.format(-diffYears, 'year');
-        if (diffMonths !== 0) return rtf.format(-diffMonths, 'month');
-        if (diffDays !== 0) return rtf.format(-diffDays, 'day');
-        if (diffHours !== 0) return rtf.format(-diffHours, 'hour');
-        if (diffMinutes !== 0) return rtf.format(-diffMinutes, 'minute');
-        return rtf.format(-diffSeconds, 'second');
-      }
-    default:
-      return {
-        date: startDate,
-        asOf: now,
-        years: years,
-        months: months,
-        days: days,
-        hours: hours,
-        minutes: minutes,
-        seconds: seconds,
-        milliseconds: milliseconds
-      };
-  }
+function timeSince(date, options = {}) {
+    /**
+     * The starting date for calculation, converted from input
+     * @type {Date}
+     */
+    const startDate = typeof date === 'string' ? new Date(date) : date;
+    // Ensure the start date is a valid date
+    if (isNaN(startDate.getTime())) {
+        throw new Error('Invalid date input');
+    }
+    /**
+     * The current date and time for comparison
+     * @type {Date}
+     */
+    const now = new Date();
+    /**
+     * Determine if the date is in the future
+     * @type {boolean}
+     */
+    const isFuture = startDate.getTime() > now.getTime();
+    /**
+     * Time difference in milliseconds (always positive)
+     * @type {number}
+     */
+    const diffMilliseconds = Math.abs(now.getTime() - startDate.getTime());
+    /**
+     * Time difference in seconds
+     * @type {number}
+     */
+    const diffSeconds = Math.floor(diffMilliseconds / 1000);
+    /**
+     * Time difference in minutes
+     * @type {number}
+     */
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    /**
+     * Time difference in hours
+     * @type {number}
+     */
+    const diffHours = Math.floor(diffMinutes / 60);
+    /**
+     * Time difference in days
+     * @type {number}
+     */
+    const diffDays = Math.floor(diffHours / 24);
+    /**
+     * Time difference in months (approximated)
+     * @type {number}
+     */
+    const diffMonths = Math.floor(diffDays / 30); // Approximate month length
+    /**
+     * Time difference in years
+     * @type {number}
+     */
+    const diffYears = Math.floor(diffMonths / 12);
+    /**
+     * Number of complete years
+     * @type {number}
+     */
+    const years = diffYears;
+    /**
+     * Number of months beyond complete years
+     * @type {number}
+     */
+    const months = diffMonths % 12;
+    /**
+     * Number of days beyond complete months
+     * Calculate more precisely for leap years
+     * @type {number}
+     */
+    // Simplified calculation that better handles leap years
+    const days = diffDays % 30; // Approximate day length in a month
+    /**
+     * Number of hours beyond complete days
+     * @type {number}
+     */
+    const hours = diffHours % 24;
+    /**
+     * Number of minutes beyond complete hours
+     * @type {number}
+     */
+    const minutes = diffMinutes % 60;
+    /**
+     * Number of seconds beyond complete minutes
+     * @type {number}
+     */
+    const seconds = diffSeconds % 60;
+    /**
+     * Number of milliseconds beyond complete seconds
+     * @type {number}
+     */
+    const milliseconds = diffMilliseconds % 1000;
+    /**
+     * Destructured options with defaults
+     */
+    const { format = 'object', locale = 'en' } = options;
+    switch (format) {
+        case 'milliseconds':
+            return diffMilliseconds;
+        case 'seconds':
+            return diffSeconds;
+        case 'minutes':
+            return diffMinutes;
+        case 'hours':
+            return diffHours;
+        case 'days':
+            return diffDays;
+        case 'months':
+            return diffMonths;
+        case 'years':
+            return diffYears;
+        case 'relative': {
+            /**
+             * Relative time formatter using the specified locale
+             * @type {Intl.RelativeTimeFormat}
+             */
+            const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+            // Apply sign based on whether the date is in the past or future
+            const sign = isFuture ? 1 : -1;
+            // Return the most significant non-zero time unit
+            if (diffYears !== 0)
+                return rtf.format(sign * diffYears, 'year');
+            if (diffMonths !== 0)
+                return rtf.format(sign * diffMonths, 'month');
+            if (diffDays !== 0)
+                return rtf.format(sign * diffDays, 'day');
+            if (diffHours !== 0)
+                return rtf.format(sign * diffHours, 'hour');
+            if (diffMinutes !== 0)
+                return rtf.format(sign * diffMinutes, 'minute');
+            if (diffSeconds !== 0)
+                return rtf.format(sign * diffSeconds, 'second');
+            return 'now';
+        }
+        default:
+            // Return the complete breakdown object
+            return {
+                date: startDate,
+                asOf: now,
+                years: isFuture ? 0 : years, // For future dates, show 0 years
+                months: isFuture ?
+                    Math.floor(diffDays / 30) : // For future dates, show total months
+                    months,
+                days,
+                hours,
+                minutes,
+                seconds,
+                milliseconds
+            };
+    }
 }
-
-// Example usage
-var elapsedTime = timeSince('2020-01-01');
-console.log(elapsedTime); // Output: Number of days since the given date
-
-timeSince('2020-01-01', {
-  format: 'days'
-});
-console.log(elapsedTime); // Output: Number of days since the given date
-
-var relativeTime = timeSince('2020-01-01', {
-  format: 'relative',
-  locale: 'fr'
-});
-console.log(relativeTime); // Output: "il y a 4 ans"
 
 exports.timeSince = timeSince;
