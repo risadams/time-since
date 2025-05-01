@@ -6,7 +6,7 @@
  * @license MIT
  */
 
-import { timeSince } from '../dist/time-since.esm.js';
+const { timeSince } = require('../dist/time-since.cjs.js');
 
 /**
  * Helper function to mock the current date for consistent test results
