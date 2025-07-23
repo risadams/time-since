@@ -44,7 +44,7 @@
   "homepage": "https://github.com/risadams/time-since#readme",
   "devDependencies": {
     "@babel/core": "^7.28.0",
-    "@babel/preset-env": "^7.27.1",
+    "@babel/preset-env": "^7.28.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
